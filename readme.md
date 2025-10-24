@@ -82,6 +82,7 @@ Used Open3D to visualize:
 ### Results
 
 <img width="475" height="171" alt="Screenshot from 2025-10-18 22-42-03" src="https://github.com/user-attachments/assets/c6288e51-3970-46e5-90ca-18e347f3f655" />
+
 | Frame | Normal Angle (°) | Area (m²) |
 |--------|------------------|-----------|
 | 1 | 64.92 | 1.7272 |

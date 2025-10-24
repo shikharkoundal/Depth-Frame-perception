@@ -51,8 +51,7 @@ This allowed geometric analysis in 3D space.
 
 
 
-where `n` is the plane normal and `c = [0, 0, 1]` is the camera direction.![Uploading Screenshot from 2025-10-18 22-42-03.png…]()
-
+where `n` is the plane normal and `c = [0, 0, 1]` is the camera direction.
 
 **5. Rotation Axis Estimation**  
 - Found cross products between normals of consecutive frames to estimate instantaneous rotation axes.  

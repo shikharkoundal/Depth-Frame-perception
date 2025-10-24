@@ -1,143 +1,146 @@
-# 3D Cuboid Rotation Estimation from
+# 3D Cuboid Rotation Estimation from Depth Frames
 
-# Depth Frames
+**Author:** Shikhar Koundal
 
-## Author: Shikhar Koundal
+---
 
-## Purpose
+### Project Overview
 
-The purpose of this project is to develop a method to estimate the **rotation angle and axis of a
-cuboidal object** from depth frames captured by a camera. The project demonstrates practical
-skills in **3D point cloud processing, plane segmentation, rotation analysis, and geometric
-reasoning** —all highly relevant in robotics, industrial automation, and computer vision.
+This project focuses on estimating the **rotation angle** and **rotation axis** of a **cuboidal box** using **depth frames** captured by a depth camera.  
+It uses Python and Open3D for 3D point cloud processing, plane segmentation, and rotation analysis.  
+The project is implemented in a ROS2 environment where depth frames are extracted from a `.db3` bag file.
 
-## Problem Statement
+---
 
-Given a ROS2 bag file containing depth frames of a cuboidal box rotating around its central axis,
-the objectives are:
+### Problem Statement
 
-1. Identify the **largest visible face** in each frame.
-2. Estimate the **normal angle** of that face relative to the camera.
-3. Calculate the **visible area** of the face in square meters.
-4. Determine the **axis of rotation** of the cuboid with respect to the camera frame.
+Given a ROS2 bag file containing depth frames of a cuboidal box rotating around its central axis, the main objectives were:
 
-Challenges include isolating the cuboid from the background, filtering noisy depth data, and
-performing accurate geometric analysis to infer orientation over time.
+1. Identify the largest visible face of the cuboid in each frame.  
+2. Estimate the normal angle of that face relative to the camera.  
+3. Calculate the visible surface area of the face.  
+4. Determine the rotation axis of the cuboid with respect to the camera frame.
 
-## Approach
+The main challenges included filtering the background, handling noisy depth data, and performing stable geometric estimation across multiple frames.
 
-**Step 1: File Preparation and Initial Inspection**
+---
 
-- All ROS2 bag files were placed into the workspace.
-- Depth frames were visually inspected. Darker regions corresponded to the cuboid, while
-    the background was lighter.
-- This observation guided masking and filtering, ensuring analysis focused only on the
-    cuboid.
+### Approach
+
+**1. Depth Frame Inspection**  
+Depth frames were extracted from the bag and visually inspected.  
+The cuboid appeared darker in the depth image (closer to the camera), helping isolate it from the background.
+
+**2. Depth Frame Processing**  
+- Converted depth values from meters to millimeters for better precision.  
+- Applied a median filter to reduce noise.  
+- Masked out the background to focus only on the cuboid region.
+
+**3. Point Cloud Generation**  
+Each filtered depth frame was converted into a **3D point cloud** using the camera’s intrinsic parameters (`fx, fy, cx, cy`).  
+This allowed geometric analysis in 3D space.
+
+**4. Plane Segmentation**  
+- Used **RANSAC** to detect the largest planar face.  
+- Extracted the plane normal vector and convex hull to calculate visible area.  
+- Calculated the normal angle using:
+
+
+
+θ = arccos( (n ⋅ c) / (|n||c|) )
+
+
+
+where `n` is the plane normal and `c = [0, 0, 1]` is the camera direction.
+
+**5. Rotation Axis Estimation**  
+- Found cross products between normals of consecutive frames to estimate instantaneous rotation axes.  
+- Averaged all axes to get the final rotation axis in the camera frame.
+
+**6. Visualization (Optional)**  
+Used Open3D to visualize:
+- Point clouds of each frame  
+- Plane normals  
+- The estimated rotation axis
+
+---
+
+### Algorithm Summary
+
+1. Load depth frames from ROS2 bag.  
+2. Convert and filter depth data.  
+3. Generate 3D point cloud.  
+4. Detect the largest plane using RANSAC.  
+5. Compute normal angle and visible area.  
+6. Estimate rotation axis using cross products.  
+7. Save outputs as CSV and text files.
+
+
+
+### Results
+
+| Frame | Normal Angle (°) | Area (m²) |
+|--------|------------------|-----------|
+| 1 | 64.92 | 1.7272 |
+| 2 | 14.15 | 2.0779 |
+| 3 | 35.00 | 2.1848 |
+| 4 | 125.55 | 1.8411 |
+| 5 | 29.99 | 1.3493 |
+| 6 | 49.02 | 2.0930 |
+| 7 | 48.78 | 2.5824 |
+
+**Estimated Rotation Axis (camera frame):**  
+`[ 0.99927848, -0.02534483, 0.02828721 ]`
+
+Saved outputs:  
+- `cuboid_face_angles_areas.csv`  
+- `rotation_axis.txt`
+
+
+
+### Tools and Libraries Used
+
+- Python 3  
+- ROS2 (Humble)  
+- Open3D  
+- NumPy  
+- SciPy  
+- Matplotlib  
+
+---
+
+### How to Run
+
+1. Place your ROS2 bag file (for example, `depth.db3`) in the project directory.  
+2. Run the main script:
+bash
+ python3 cuboid_rotation_estimation.py
+
+
+3. The output will generate:
+
+   * A CSV file with frame-wise angle and area.
+   * A text file containing the estimated rotation axis.
+4. (Optional) Run `visualize.py` to see 3D visualization.
+
+---
+
+### Summary
+
+This project demonstrates:
+
+* Converting depth data into 3D point clouds.
+* Detecting and analyzing planar surfaces using RANSAC.
+* Estimating orientation and rotation axis of a 3D object.
+
+It combines computer vision and geometric reasoning to estimate motion in 3D space — a useful approach for robotics and perception systems.
+
+---
+
+### Author
+
+**Shikhar Koundal**
+B.Tech Final Year | Robotics & Computer Vision Enthusiast
+[LinkedIn](https://linkedin.com/in/shikharkoundal) | [GitHub](https://github.com/sk1133)
 
 ```
-Figure 1: Example depth frame showing the cuboid as the darker region in the center.
-```
-**Step 2: Depth Frame Processing**
-
-
-- Depth values were **converted from meters to millimeters** for better precision with
-    near-camera points.
-- Applied a **median filter** to smooth the depth frame and reduce noise.
-- Masked out the background, keeping only points corresponding to the cuboid.
-
-**Step 3: Point Cloud Generation**
-
-- Converted the filtered depth frame into a 3D point cloud using camera intrinsics (focal
-    lengths FX, FY and image center).
-- This allowed geometric analysis in 3D space.
-
-**Step 4: Plane Segmentation**
-
-- The largest planar face was identified using RANSAC.
-- Extracted the plane normal (n=[𝑎,𝑏,𝑐]) and convex hull to calculate visible area.
-- Plane centers were also stored for rotation axis estimation.
-    Normal angle calculation formula:
-
-```
-𝜽=𝐚𝐫𝐜𝐜𝐨𝐬⁡(
-```
-### 𝐧⋅𝐜
-
-### ∥𝐧∥∥𝐜∥
-
-### )
-
-```
-Where:
-```
-- 𝑛 _= plane normal vector_
-- 𝑐 _= camera normal vector (typically_ [ 0 , 0 , 1 ] _)_
-- 𝜃 _= angle between camera and plane normal_
-
-**Step 5: Rotation Axis Estimation**
-
-- Calculated cross products of consecutive normals to estimate instantaneous rotation
-    axes:
-       axis𝑖=normalize(n𝑖×n𝑖+ 1 )
-- Averaged these vectors to obtain the final rotation axis relative to the camera frame:
-    axis=
-
-### 1
-
-### 𝑁
-
-### ∑
-
-```
-𝑖
-```
-```
-axis𝑖
-```
-- This method assumes the cuboid rotates smoothly around a fixed axis.
-
-**Step 6: Optional Verification (3D Visualization)**
-
-- Although visualization was not required, Open3D was used to verify the point cloud and
-    plane normals.
-- Cuboid points, normals, and the rotation axis were visualized to confirm alignment with
-    the expected geometry.
-
-## Algorithm Summary
-
-1. Load Depth Frames: Extract frames from ROS2 bag using rosbags.
-2. Convert & Filter: Convert depth to millimeters, apply median filter, and mask cuboid
-    region.
-3. Depth to Point Cloud: Generate 3D points using camera intrinsics.
-
-
-4. Largest Plane Detection: Use RANSAC → compute normal vector, convex hull, and
-    visible area.
-5. Normal Angle Calculation: Use the formula above.
-6. Rotation Axis Estimation: Cross products of consecutive normals → average.
-7. Save Results: Output normal angles, visible areas, and rotation axis.
-
-## Results
-
-Frame 1: Normal angle = 64.92 deg, Area = 1.7272 m²
-Frame 2: Normal angle = 14.15 deg, Area = 2.0779 m²
-Frame 3: Normal angle = 35.00 deg, Area = 2.1848 m²
-Frame 4: Normal angle = 125.55deg, Area = 1.8411 m²
-Frame 5: Normal angle = 29.99 deg, Area = 1.3493 m²
-Frame 6: Normal angle = 49.02 deg, Area = 2.0930 m²
-Frame 7: Normal angle = 48.78 deg, Area = 2.5824 m²
-Estimated rotation axis (camera frame): [ 0.99927848 -0.02534483 0.02828721]
-Saved frame-angle-area table to 'cuboid_face_angles_areas.csv'
-Saved rotation axis to 'rotation_axis.txt'
-
-```
-Figure 3: Side-by-side visualization of depth frame (masked) and 3D cuboid point cloud.
-```
-## Key Highlights
-
-- Efficient **depth-to-3D conversion** and masking of the cuboid.
-- Robust **plane segmentation** to extract normals and visible areas.
-- Simple and reliable **rotation axis estimation**.
-- Optional visualization confirmed the geometric correctness of extracted parameters.
-
-

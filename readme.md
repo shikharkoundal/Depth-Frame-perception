@@ -1,3 +1,5 @@
+
+https://github.com/user-attachments/assets/0ed3c932-c64f-4ea3-8603-59711b3dc6ff
 # 3D Cuboid Rotation Estimation from Depth Frames
 **Author:** Shikhar Koundal
 
@@ -22,6 +24,11 @@ Given a ROS2 bag file containing depth frames of a cuboidal box rotating around 
 
 
 The main challenges included filtering the background, handling noisy depth data, and performing stable geometric estimation across multiple frames.
+
+
+
+https://github.com/user-attachments/assets/e98ce6aa-9174-4e56-98cb-22de95151f54
+
 
 ---
 

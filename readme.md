@@ -1,5 +1,4 @@
 # 3D Cuboid Rotation Estimation from Depth Frames
-
 **Author:** Shikhar Koundal
 
 ---
@@ -127,24 +126,9 @@ bash
    * A text file containing the estimated rotation axis.
 4. (Optional) Run `visualize.py` to see 3D visualization.
 
----
-
-### Summary
-
-This project demonstrates:
-
-* Converting depth data into 3D point clouds.
-* Detecting and analyzing planar surfaces using RANSAC.
-* Estimating orientation and rotation axis of a 3D object.
-
-It combines computer vision and geometric reasoning to estimate motion in 3D space — a useful approach for robotics and perception systems.
-
----
 
 ### Author
 
 **Shikhar Koundal**
 B.Tech Final Year | Robotics & Computer Vision Enthusiast
 [LinkedIn](https://linkedin.com/in/shikharkoundal) | [GitHub](https://github.com/sk1133)
-
-```

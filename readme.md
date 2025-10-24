@@ -1,5 +1,3 @@
-
-https://github.com/user-attachments/assets/0ed3c932-c64f-4ea3-8603-59711b3dc6ff
 # 3D Cuboid Rotation Estimation from Depth Frames
 **Author:** Shikhar Koundal
 

@@ -21,6 +21,7 @@ Given a ROS2 bag file containing depth frames of a cuboidal box rotating around 
 3. Calculate the visible surface area of the face.  
 4. Determine the rotation axis of the cuboid with respect to the camera frame.
 
+
 The main challenges included filtering the background, handling noisy depth data, and performing stable geometric estimation across multiple frames.
 
 ---
@@ -51,7 +52,8 @@ This allowed geometric analysis in 3D space.
 
 
 
-where `n` is the plane normal and `c = [0, 0, 1]` is the camera direction.
+where `n` is the plane normal and `c = [0, 0, 1]` is the camera direction.![Uploading Screenshot from 2025-10-18 22-42-03.png…]()
+
 
 **5. Rotation Axis Estimation**  
 - Found cross products between normals of consecutive frames to estimate instantaneous rotation axes.  
@@ -79,6 +81,7 @@ Used Open3D to visualize:
 
 ### Results
 
+<img width="475" height="171" alt="Screenshot from 2025-10-18 22-42-03" src="https://github.com/user-attachments/assets/c6288e51-3970-46e5-90ca-18e347f3f655" />
 | Frame | Normal Angle (°) | Area (m²) |
 |--------|------------------|-----------|
 | 1 | 64.92 | 1.7272 |
